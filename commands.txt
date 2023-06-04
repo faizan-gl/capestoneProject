@@ -1,0 +1,27 @@
+Problem 1: Command to initialise the terraform while using "s3" backend (need to run only once)
+    $ terraform init -backend-config="access_key=<your access key>" -backend-config="secret_key=<your secret key>"
+        -> Simple '$ terraform init' will give the error for the first time:
+             Error: error configuring S3 Backend: no valid credential sources for S3 Backend found.
+        -> Once the above command run for the first time, simple '$ terraform init' command will work fine
+
+Problem 2: How to pass variable's value during runtime?
+    $ terraform plan -var="accessKey=<value>"  -var="secretKey=<value>"
+    $ terraform apply -var="accessKey=<value>"  -var="secretKey=<value>" -auto-approve
+    $ terraform destroy -var="accessKey=<value>"  -var="secretKey=<value>" -auto-approve
+
+    -> This method is used when we need to keep some confidential information 
+        safe by not assigning value to the variable in the terraform file.
+
+Error:  Failed to connect to repository : Command "/usr/bin/git ls-remote -h -- https://github.com/faizan-gl/capestoneProject.git HEAD" returned status code 128:
+        stdout:
+        stderr: remote: Support for password authentication was removed on August 13, 2021.
+        remote: Please see https://docs.github.com/en/get-started/getting-started-with-git/about-remote-repositories#cloning-with-https-urls for information on currently recommended modes of authentication.
+        fatal: Authentication failed for 'https://github.com/faizan-gl/capestoneProject.git/'
+
+    Solution: Make the Repo Public
+
+Error : Could not initialize class sun.nio.fs.LinuxNativeDispatcher
+    Solution: Restart the Jenkins
+
+
+
