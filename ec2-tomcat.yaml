@@ -1,0 +1,54 @@
+- hosts: ec2
+  become: yes
+  remote_user: ec2-user
+  tasks:
+    - name: Update
+      yum:
+        name: '*'
+        state: latest
+
+    - name: Installing JDK
+      yum:
+        name: java-1.8.0-openjdk-devel
+        state: latest
+
+    - name: Adding Group and user for Tomcat
+      shell: getent passwd tomcat || useradd -s /bin/false -g tomcat -d /opt/tomcat tomcat
+
+    - name: Installing curl
+      yum:
+        name: curl
+        state: latest
+
+    - name: Downloading Apache Tomcat tar
+      get_url:
+        url: http://archive.apache.org/dist/tomcat/tomcat-9/v9.0.50/bin/apache-tomcat-9.0.50.tar.gz
+        dest: /tmp/apache-tomcat-9.0.50.tar.gz
+        force: yes
+
+    - name: Creating Apache Tomcat home directory
+      stat:
+        path: /opt/tomcat
+      register: tomcat_dir
+
+    - name: Create Apache Tomcat home directory if it doesn't exist
+      command: mkdir /opt/tomcat
+      when: not tomcat_dir.stat.exists
+
+    - name: Extracting Apache Tomcat
+      shell: tar -xzvf /tmp/apache-tomcat-9*tar.gz -C /opt/tomcat --strip-components=1
+
+    - name: Updating permissions
+      command: "{{ item }}"
+      with_items:
+        - chown -R tomcat:tomcat /opt/tomcat
+        - chmod -R g+r /opt/tomcat/conf
+        - chmod g+x /opt/tomcat/conf
+
+    - name: Run startup.sh script
+      become: yes
+      shell: /opt/tomcat/bin/startup.sh
+      register: startup_output
+
+    - debug:
+        var: startup_output
